@@ -27,7 +27,7 @@ model Store {
   description String?
   currency    String     @default("USD")
   logoUrl     String?
-  themeColor  String     @default("#1abf77")
+  themeColor  String     @default("#2563eb")
   template    String     @default("modern")
   tagline     String?
   onboarded   Boolean    @default(false)

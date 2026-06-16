@@ -116,7 +116,7 @@ async function main() {
       slug: "aura-boutique",
       description: "أزياء وإكسسوارات عصرية مختارة بعناية.",
       currency: "USD",
-      themeColor: "#1abf77",
+      themeColor: "#2563eb",
       template: "modern",
       tagline: "أناقة لا تنتهي — تشكيلة Aura المختارة",
       onboarded: true,

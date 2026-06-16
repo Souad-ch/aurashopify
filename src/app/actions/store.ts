@@ -13,7 +13,7 @@ const storeSchema = z.object({
   name: z.string().min(2, "اسم المتجر مطلوب"),
   description: z.string().optional(),
   currency: z.string().default("USD"),
-  themeColor: z.string().default("#1abf77"),
+  themeColor: z.string().default("#2563eb"),
   template: z.enum(TEMPLATE_IDS).optional(),
   tagline: z.string().optional(),
   email: z.string().email("بريد غير صالح").optional().or(z.literal("")),

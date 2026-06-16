@@ -20,8 +20,8 @@ export function RevenueChart({
       <AreaChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
         <defs>
           <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#1abf77" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#1abf77" stopOpacity={0} />
+            <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
+            <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />

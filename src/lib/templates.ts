@@ -23,7 +23,7 @@ export const TEMPLATES: Template[] = [
     id: "modern",
     name: "عصري",
     description: "تصميم نظيف وعصري بهيدر متدرّج اللون وبطاقات بظلال ناعمة. مناسب لمعظم المتاجر.",
-    preview: { bg: "#effdf6", accent: "#1abf77", text: "#1a1a1a" },
+    preview: { bg: "#eff6ff", accent: "#2563eb", text: "#1a1a1a" },
     hero: "gradient",
     font: "sans",
     productColumns: 4,
