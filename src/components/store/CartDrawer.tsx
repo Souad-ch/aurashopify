@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCart } from "./CartContext";
 import { formatCurrency } from "@/lib/format";
 import { checkoutAction } from "@/app/actions/checkout";
+import { checkDiscount } from "@/app/actions/discounts";
 import { useState } from "react";
 
 export function CartButton({ color }: { color: string }) {
@@ -38,8 +39,26 @@ export function CartDrawer({
   const { items, open, setOpen, setQty, remove, total, clear } = useCart();
   const [done, setDone] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [code, setCode] = useState("");
+  const [discount, setDiscount] = useState<{ code: string; amount: number } | null>(null);
+  const [codeMsg, setCodeMsg] = useState("");
 
   if (!open) return null;
+
+  const grandTotal = Math.max(0, total - (discount?.amount || 0));
+
+  async function applyCode() {
+    setCodeMsg("");
+    if (!code.trim()) return;
+    const res = await checkDiscount(slug, code, total);
+    if (res.ok) {
+      setDiscount({ code: res.code, amount: res.amount });
+      setCodeMsg("");
+    } else {
+      setDiscount(null);
+      setCodeMsg(res.error);
+    }
+  }
 
   async function handleCheckout(formData: FormData) {
     setLoading(true);
@@ -51,11 +70,14 @@ export function CartDrawer({
     }));
     formData.set("items", JSON.stringify(payload));
     formData.set("slug", slug);
+    if (discount) formData.set("discountCode", discount.code);
     const res = await checkoutAction(formData);
     setLoading(false);
     if (res?.orderNumber) {
       setDone(res.orderNumber);
       clear();
+      setDiscount(null);
+      setCode("");
     }
   }
 
@@ -144,10 +166,45 @@ export function CartDrawer({
             </div>
 
             <div className="border-t border-gray-100 p-5">
-              <div className="mb-4 flex items-center justify-between text-sm">
-                <span className="text-ink-soft">الإجمالي</span>
+              {/* discount code */}
+              <div className="mb-3">
+                <div className="flex gap-2">
+                  <input
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.toUpperCase())}
+                    placeholder="كود الخصم"
+                    className="input flex-1 uppercase"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyCode}
+                    className="btn-outline whitespace-nowrap"
+                  >
+                    تطبيق
+                  </button>
+                </div>
+                {codeMsg && <p className="mt-1 text-xs text-rose-600">{codeMsg}</p>}
+                {discount && (
+                  <p className="mt-1 text-xs text-brand-600">
+                    ✓ تم تطبيق الكود {discount.code}
+                  </p>
+                )}
+              </div>
+
+              <div className="mb-1 flex items-center justify-between text-sm text-ink-soft">
+                <span>المجموع الفرعي</span>
+                <span>{formatCurrency(total, currency)}</span>
+              </div>
+              {discount && (
+                <div className="mb-1 flex items-center justify-between text-sm text-brand-600">
+                  <span>الخصم ({discount.code})</span>
+                  <span>−{formatCurrency(discount.amount, currency)}</span>
+                </div>
+              )}
+              <div className="mb-4 flex items-center justify-between border-t border-gray-100 pt-2 text-sm">
+                <span className="font-medium text-ink">الإجمالي</span>
                 <span className="text-lg font-bold text-ink">
-                  {formatCurrency(total, currency)}
+                  {formatCurrency(grandTotal, currency)}
                 </span>
               </div>
               <form action={handleCheckout} className="space-y-3">

@@ -135,6 +135,14 @@ async function main() {
     },
   });
 
+  // Discount codes
+  await prisma.discount.createMany({
+    data: [
+      { code: "WELCOME10", type: "percent", value: 10, storeId: store.id },
+      { code: "SAVE20", type: "fixed", value: 20, storeId: store.id },
+    ],
+  });
+
   // Subscription
   await prisma.subscription.create({
     data: {

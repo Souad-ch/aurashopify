@@ -9,6 +9,7 @@ const checkoutSchema = z.object({
   email: z.string().email(),
   slug: z.string().min(1),
   items: z.string().min(1),
+  discountCode: z.string().optional(),
 });
 
 const itemSchema = z.array(
@@ -46,7 +47,23 @@ export async function checkoutAction(formData: FormData) {
     });
   }
 
-  const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
+
+  // Apply discount code if provided and valid
+  let total = subtotal;
+  const codeInput = (parsed.data.discountCode || "").trim().toUpperCase();
+  if (codeInput) {
+    const discount = await prisma.discount.findFirst({
+      where: { storeId: store.id, code: codeInput, active: true },
+    });
+    if (discount) {
+      const amount =
+        discount.type === "percent"
+          ? (subtotal * discount.value) / 100
+          : Math.min(discount.value, subtotal);
+      total = Math.max(0, subtotal - amount);
+    }
+  }
 
   const last = await prisma.order.findFirst({
     where: { storeId: store.id },
