@@ -15,6 +15,14 @@ const PRODUCT_IMAGES = [
 ];
 
 async function main() {
+  // Idempotent: if the database already has users, don't reseed
+  // (safe to run on every deploy without wiping real data).
+  const existingUsers = await prisma.user.count().catch(() => 0);
+  if (existingUsers > 0) {
+    console.log("ℹ️  Database already seeded — skipping.");
+    return;
+  }
+
   console.log("🌱 Seeding Aura database...");
 
   // Clean
