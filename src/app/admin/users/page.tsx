@@ -1,24 +1,23 @@
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import { useState } from "react";
 import { formatDate } from "@/lib/format";
-import { getAdminSession } from "@/lib/auth";
-import { ToggleRoleButton } from "@/components/admin/AdminActions";
+import { ADMIN_USERS } from "@/lib/mock";
 
-export const dynamic = "force-dynamic";
+export default function AdminUsersPage() {
+  const [roles, setRoles] = useState<Record<string, string>>(
+    Object.fromEntries(ADMIN_USERS.map((u) => [u.id, u.role]))
+  );
 
-export default async function AdminUsersPage() {
-  const [users, admin] = await Promise.all([
-    prisma.user.findMany({
-      orderBy: { createdAt: "desc" },
-      include: { store: true, subscription: { include: { plan: true } } },
-    }),
-    getAdminSession(),
-  ]);
+  function toggle(id: string) {
+    setRoles((r) => ({ ...r, [id]: r[id] === "admin" ? "merchant" : "admin" }));
+  }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-ink">المستخدمون</h1>
-        <p className="text-sm text-ink-soft">{users.length} مستخدم مسجّل</p>
+        <p className="text-sm text-ink-soft">{ADMIN_USERS.length} مستخدم مسجّل</p>
       </div>
 
       <div className="card overflow-hidden">
@@ -36,39 +35,28 @@ export default async function AdminUsersPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map((u) => (
-                <tr key={u.id} className="border-b border-gray-50 hover:bg-gray-50/50">
-                  <td className="px-5 py-3 font-medium text-ink">{u.name}</td>
-                  <td className="px-5 py-3 text-ink-soft">{u.email}</td>
-                  <td className="px-5 py-3">
-                    <span
-                      className={`badge ${
-                        u.role === "admin"
-                          ? "bg-ink text-white"
-                          : "bg-gray-100 text-ink-soft"
-                      }`}
-                    >
-                      {u.role === "admin" ? "أدمن" : "تاجر"}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-ink-soft">
-                    {u.store?.name || "—"}
-                  </td>
-                  <td className="px-5 py-3 text-ink-soft">
-                    {u.subscription?.plan.name || "—"}
-                  </td>
-                  <td className="px-5 py-3 text-ink-soft">
-                    {formatDate(u.createdAt)}
-                  </td>
-                  <td className="px-5 py-3">
-                    <ToggleRoleButton
-                      userId={u.id}
-                      role={u.role}
-                      disabled={u.id === admin?.userId}
-                    />
-                  </td>
-                </tr>
-              ))}
+              {ADMIN_USERS.map((u) => {
+                const role = roles[u.id];
+                return (
+                  <tr key={u.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                    <td className="px-5 py-3 font-medium text-ink">{u.name}</td>
+                    <td className="px-5 py-3 text-ink-soft">{u.email}</td>
+                    <td className="px-5 py-3">
+                      <span className={`badge ${role === "admin" ? "bg-ink text-white" : "bg-gray-100 text-ink-soft"}`}>
+                        {role === "admin" ? "أدمن" : "تاجر"}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-ink-soft">{u.store}</td>
+                    <td className="px-5 py-3 text-ink-soft">{u.plan}</td>
+                    <td className="px-5 py-3 text-ink-soft">{formatDate(u.createdAt)}</td>
+                    <td className="px-5 py-3">
+                      <button onClick={() => toggle(u.id)} className="text-xs font-medium text-brand-600 hover:underline">
+                        {role === "admin" ? "إلغاء صلاحية الأدمن" : "ترقية إلى أدمن"}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

@@ -9,10 +9,3 @@ npm-debug.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
-/prisma/*.db
-/prisma/*.db-journal
-/prisma/dev.db
-
-# uploaded files (keep folder, ignore contents)
-/public/uploads/*
-!/public/uploads/.gitkeep

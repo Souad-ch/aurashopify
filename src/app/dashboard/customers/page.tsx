@@ -1,26 +1,14 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { CUSTOMERS, STORE } from "@/lib/mock";
 
-export const dynamic = "force-dynamic";
-
-export default async function CustomersPage() {
-  const user = await getCurrentUser();
-  if (!user?.store) redirect("/login");
-
-  const customers = await prisma.customer.findMany({
-    where: { storeId: user.store.id },
-    orderBy: { createdAt: "desc" },
-    include: { orders: true },
-  });
-  const currency = user.store.currency;
+export default function CustomersPage() {
+  const currency = STORE.currency;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-ink">العملاء</h1>
-        <p className="text-sm text-ink-soft">{customers.length} عميل</p>
+        <p className="text-sm text-ink-soft">{CUSTOMERS.length} عميل</p>
       </div>
 
       <div className="card overflow-hidden">
@@ -36,34 +24,20 @@ export default async function CustomersPage() {
               </tr>
             </thead>
             <tbody>
-              {customers.map((c) => {
-                const spent = c.orders.reduce((s, o) => s + o.total, 0);
-                return (
-                  <tr
-                    key={c.id}
-                    className="border-b border-gray-50 hover:bg-gray-50/50"
-                  >
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-3">
-                        <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-50 text-sm font-bold text-brand-700">
-                          {c.name.charAt(0)}
-                        </span>
-                        <span className="font-medium text-ink">{c.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3 text-ink-soft">{c.email}</td>
-                    <td className="px-5 py-3 text-ink-soft">
-                      {c.orders.length}
-                    </td>
-                    <td className="px-5 py-3 font-medium text-ink">
-                      {formatCurrency(spent, currency)}
-                    </td>
-                    <td className="px-5 py-3 text-ink-soft">
-                      {formatDate(c.createdAt)}
-                    </td>
-                  </tr>
-                );
-              })}
+              {CUSTOMERS.map((c) => (
+                <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                  <td className="px-5 py-3">
+                    <div className="flex items-center gap-3">
+                      <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-50 text-sm font-bold text-brand-700">{c.name.charAt(0)}</span>
+                      <span className="font-medium text-ink">{c.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3 text-ink-soft">{c.email}</td>
+                  <td className="px-5 py-3 text-ink-soft">{c.orders}</td>
+                  <td className="px-5 py-3 font-medium text-ink">{formatCurrency(c.spent, currency)}</td>
+                  <td className="px-5 py-3 text-ink-soft">{formatDate(c.createdAt)}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

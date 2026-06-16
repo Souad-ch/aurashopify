@@ -1,32 +1,17 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate, statusBadge } from "@/lib/format";
+import { ORDERS, STORE } from "@/lib/mock";
 
-export const dynamic = "force-dynamic";
+const PAID = ["paid", "fulfilled"];
 
-export default async function OrdersPage() {
-  const user = await getCurrentUser();
-  if (!user?.store) redirect("/login");
-
-  const orders = await prisma.order.findMany({
-    where: { storeId: user.store.id },
-    orderBy: { createdAt: "desc" },
-    include: { customer: true, items: true },
-  });
-  const currency = user.store.currency;
-
-  const totalRevenue = orders
-    .filter((o) => ["paid", "fulfilled"].includes(o.status))
-    .reduce((s, o) => s + o.total, 0);
+export default function OrdersPage() {
+  const currency = STORE.currency;
+  const totalRevenue = ORDERS.filter((o) => PAID.includes(o.status)).reduce((s, o) => s + o.total, 0);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-ink">الطلبات</h1>
-        <p className="text-sm text-ink-soft">
-          {orders.length} طلب · إجمالي {formatCurrency(totalRevenue, currency)}
-        </p>
+        <p className="text-sm text-ink-soft">{ORDERS.length} طلب · إجمالي {formatCurrency(totalRevenue, currency)}</p>
       </div>
 
       <div className="card overflow-hidden">
@@ -43,32 +28,16 @@ export default async function OrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((o) => {
+              {ORDERS.map((o) => {
                 const badge = statusBadge(o.status);
-                const itemCount = o.items.reduce((s, i) => s + i.quantity, 0);
                 return (
-                  <tr
-                    key={o.id}
-                    className="border-b border-gray-50 hover:bg-gray-50/50"
-                  >
-                    <td className="px-5 py-3 font-medium text-ink">
-                      #{o.number}
-                    </td>
-                    <td className="px-5 py-3 text-ink-soft">
-                      {o.customer?.name || "زائر"}
-                    </td>
-                    <td className="px-5 py-3 text-ink-soft">{itemCount} عنصر</td>
-                    <td className="px-5 py-3 text-ink-soft">
-                      {formatDate(o.createdAt)}
-                    </td>
-                    <td className="px-5 py-3">
-                      <span className={`badge ${badge.className}`}>
-                        {badge.label}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 font-medium text-ink">
-                      {formatCurrency(o.total, currency)}
-                    </td>
+                  <tr key={o.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                    <td className="px-5 py-3 font-medium text-ink">#{o.number}</td>
+                    <td className="px-5 py-3 text-ink-soft">{o.customerName}</td>
+                    <td className="px-5 py-3 text-ink-soft">{o.items} عنصر</td>
+                    <td className="px-5 py-3 text-ink-soft">{formatDate(o.createdAt)}</td>
+                    <td className="px-5 py-3"><span className={`badge ${badge.className}`}>{badge.label}</span></td>
+                    <td className="px-5 py-3 font-medium text-ink">{formatCurrency(o.total, currency)}</td>
                   </tr>
                 );
               })}

@@ -1,46 +1,25 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
-import { updateStore, type StoreState } from "@/app/actions/store";
+import { useState } from "react";
 import { ImageUpload } from "@/components/ImageUpload";
+import type { STORE as StoreType } from "@/lib/mock";
 
-type Store = {
-  name: string;
-  description: string | null;
-  currency: string;
-  themeColor: string;
-  email: string | null;
-  phone: string | null;
-  address: string | null;
-  logoUrl: string | null;
-  slug: string;
-};
-
-function SaveButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button type="submit" disabled={pending} className="btn-primary">
-      {pending ? "جارٍ الحفظ..." : "حفظ التغييرات"}
-    </button>
-  );
-}
+type Store = typeof StoreType;
 
 export function SettingsForm({ store }: { store: Store }) {
-  const [state, action] = useFormState<StoreState, FormData>(
-    updateStore,
-    undefined
-  );
+  const [saved, setSaved] = useState(false);
+
+  function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  }
 
   return (
-    <form action={action} className="space-y-6">
-      {state?.error && (
-        <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          {state.error}
-        </div>
-      )}
-      {state?.success && (
+    <form onSubmit={submit} className="space-y-6">
+      {saved && (
         <div className="rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-800">
-          ✓ تم حفظ الإعدادات بنجاح
+          ✓ تم حفظ الإعدادات (نسخة تجريبية — لا تُحفظ بشكل دائم)
         </div>
       )}
 
@@ -53,22 +32,10 @@ export function SettingsForm({ store }: { store: Store }) {
           </div>
           <div>
             <label className="label">وصف المتجر</label>
-            <textarea
-              name="description"
-              rows={3}
-              defaultValue={store.description || ""}
-              className="input"
-            />
+            <textarea name="description" rows={3} defaultValue={store.description || ""} className="input" />
           </div>
-          <ImageUpload
-            name="logoUrl"
-            label="شعار المتجر"
-            defaultValue={store.logoUrl}
-          />
-          <p className="text-xs text-ink-soft">
-            رابط متجرك:{" "}
-            <span className="font-mono text-ink">/store/{store.slug}</span>
-          </p>
+          <ImageUpload name="logoUrl" label="شعار المتجر" defaultValue={store.logoUrl} />
+          <p className="text-xs text-ink-soft">رابط متجرك: <span className="font-mono text-ink">/store/{store.slug}</span></p>
         </div>
       </div>
 
@@ -77,12 +44,7 @@ export function SettingsForm({ store }: { store: Store }) {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="label">البريد الإلكتروني</label>
-            <input
-              name="email"
-              type="email"
-              defaultValue={store.email || ""}
-              className="input"
-            />
+            <input name="email" type="email" defaultValue={store.email || ""} className="input" />
           </div>
           <div>
             <label className="label">رقم الهاتف</label>
@@ -90,11 +52,7 @@ export function SettingsForm({ store }: { store: Store }) {
           </div>
           <div className="sm:col-span-2">
             <label className="label">العنوان</label>
-            <input
-              name="address"
-              defaultValue={store.address || ""}
-              className="input"
-            />
+            <input name="address" defaultValue={store.address || ""} className="input" />
           </div>
         </div>
       </div>
@@ -114,18 +72,13 @@ export function SettingsForm({ store }: { store: Store }) {
           </div>
           <div>
             <label className="label">لون المتجر الأساسي</label>
-            <input
-              name="themeColor"
-              type="color"
-              defaultValue={store.themeColor}
-              className="input h-11 cursor-pointer p-1"
-            />
+            <input name="themeColor" type="color" defaultValue={store.themeColor} className="input h-11 cursor-pointer p-1" />
           </div>
         </div>
       </div>
 
       <div className="flex justify-end">
-        <SaveButton />
+        <button type="submit" className="btn-primary">حفظ التغييرات</button>
       </div>
     </form>
   );

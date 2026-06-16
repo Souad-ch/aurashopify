@@ -1,32 +1,22 @@
-import { redirect } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { RegisterForm } from "@/components/AuthForms";
-import { getSession } from "@/lib/auth";
 
-export default async function RegisterPage() {
-  if (await getSession()) redirect("/dashboard");
-
+export default function RegisterPage() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="hidden bg-gradient-to-br from-ink to-gray-800 lg:block">
         <div className="flex h-full flex-col justify-center px-16 text-white">
-          <h2 className="text-4xl font-extrabold leading-tight">
-            ابدأ رحلتك في التجارة الإلكترونية.
-          </h2>
+          <h2 className="text-4xl font-extrabold leading-tight">ابدأ رحلتك في التجارة الإلكترونية.</h2>
           <p className="mt-4 max-w-md text-lg text-gray-300">
             أنشئ متجرك خلال دقائق وابدأ البيع للعالم كله. بدون بطاقة ائتمان.
           </p>
           <ul className="mt-8 space-y-3 text-gray-200">
-            {["متجر إلكتروني جاهز", "لوحة تحكم وتحليلات", "دعم على مدار الساعة"].map(
-              (f) => (
-                <li key={f} className="flex items-center gap-2">
-                  <span className="grid h-5 w-5 place-items-center rounded-full bg-brand-500 text-xs">
-                    ✓
-                  </span>
-                  {f}
-                </li>
-              )
-            )}
+            {["متجر إلكتروني جاهز", "لوحة تحكم وتحليلات", "دعم على مدار الساعة"].map((f) => (
+              <li key={f} className="flex items-center gap-2">
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-brand-500 text-xs">✓</span>
+                {f}
+              </li>
+            ))}
           </ul>
         </div>
       </div>
@@ -34,9 +24,7 @@ export default async function RegisterPage() {
         <div className="mx-auto w-full max-w-sm">
           <Logo />
           <h1 className="mt-8 text-2xl font-bold text-ink">أنشئ حسابك</h1>
-          <p className="mt-1 text-sm text-ink-soft">
-            ابدأ تجربتك المجانية الآن.
-          </p>
+          <p className="mt-1 text-sm text-ink-soft">ابدأ تجربتك المجانية الآن.</p>
           <div className="mt-6">
             <RegisterForm />
           </div>
