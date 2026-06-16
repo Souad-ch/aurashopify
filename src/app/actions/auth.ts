@@ -80,7 +80,8 @@ export async function registerAction(
     role: user.role,
   });
 
-  redirect("/dashboard");
+  // New merchants pick a store template first.
+  redirect("/onboarding");
 }
 
 const loginSchema = z.object({

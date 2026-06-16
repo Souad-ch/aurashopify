@@ -3,12 +3,15 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { updateStore, type StoreState } from "@/app/actions/store";
 import { ImageUpload } from "@/components/ImageUpload";
+import { TemplatePicker } from "@/components/TemplatePicker";
 
 type Store = {
   name: string;
   description: string | null;
   currency: string;
   themeColor: string;
+  template: string;
+  tagline: string | null;
   email: string | null;
   phone: string | null;
   address: string | null;
@@ -60,6 +63,15 @@ export function SettingsForm({ store }: { store: Store }) {
               className="input"
             />
           </div>
+          <div>
+            <label className="label">الجملة الترويجية (Tagline)</label>
+            <input
+              name="tagline"
+              defaultValue={store.tagline || ""}
+              className="input"
+              placeholder="مثال: أفضل المنتجات بأفضل الأسعار"
+            />
+          </div>
           <ImageUpload
             name="logoUrl"
             label="شعار المتجر"
@@ -70,6 +82,14 @@ export function SettingsForm({ store }: { store: Store }) {
             <span className="font-mono text-ink">/store/{store.slug}</span>
           </p>
         </div>
+      </div>
+
+      <div className="card p-6">
+        <h2 className="mb-1 font-semibold text-ink">قالب المتجر</h2>
+        <p className="mb-4 text-sm text-ink-soft">
+          اختر شكل واجهة متجرك. التغيير يُطبّق فوراً على متجرك العام.
+        </p>
+        <TemplatePicker defaultValue={store.template} />
       </div>
 
       <div className="card p-6">

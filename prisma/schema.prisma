@@ -28,6 +28,9 @@ model Store {
   currency    String     @default("USD")
   logoUrl     String?
   themeColor  String     @default("#1abf77")
+  template    String     @default("modern")
+  tagline     String?
+  onboarded   Boolean    @default(false)
   email       String?
   phone       String?
   address     String?
