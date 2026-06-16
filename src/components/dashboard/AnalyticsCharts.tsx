@@ -13,7 +13,7 @@ import {
   YAxis,
 } from "recharts";
 
-const COLORS = ["#1abf77", "#42d896", "#0f9d60", "#7eebb8", "#106342", "#b3f5d4"];
+const COLORS = ["#2563eb", "#60a5fa", "#1d4ed8", "#93c5fd", "#1e40af", "#bfdbfe"];
 
 export function MonthlyBarChart({
   data,
@@ -40,7 +40,7 @@ export function MonthlyBarChart({
           formatter={(v: number) => [`$${v.toFixed(0)}`, "الإيرادات"]}
           contentStyle={{ borderRadius: 12, border: "1px solid #eee", fontSize: 13 }}
         />
-        <Bar dataKey="revenue" fill="#1abf77" radius={[6, 6, 0, 0]} />
+        <Bar dataKey="revenue" fill="#2563eb" radius={[6, 6, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -48,7 +48,7 @@ export const STORE = {
   slug: "aura-boutique",
   description: "أزياء وإكسسوارات عصرية مختارة بعناية.",
   currency: "USD",
-  themeColor: "#1abf77",
+  themeColor: "#2563eb",
   email: "hello@aura-boutique.com",
   phone: "+963 11 123 4567",
   address: "Damascus, Syria",
