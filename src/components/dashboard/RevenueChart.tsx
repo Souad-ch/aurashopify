@@ -48,7 +48,7 @@ export function RevenueChart({
         <Area
           type="monotone"
           dataKey="revenue"
-          stroke="#0f9d60"
+          stroke="#1d4ed8"
           strokeWidth={2.5}
           fill="url(#rev)"
         />

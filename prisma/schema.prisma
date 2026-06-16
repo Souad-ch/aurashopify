@@ -42,6 +42,7 @@ model Store {
   products    Product[]
   orders      Order[]
   customers   Customer[]
+  discounts   Discount[]
 }
 
 model Product {
@@ -60,20 +61,48 @@ model Product {
   storeId     String
   store       Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
+  variants    Variant[]
   orderItems  OrderItem[]
 }
 
-model Customer {
+model Variant {
+  id        String  @id @default(cuid())
+  name      String  // e.g. "أحمر / M"
+  price     Float?  // optional override; null => use product price
+  stock     Int     @default(0)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Discount {
   id        String   @id @default(cuid())
-  name      String
-  email     String
-  phone     String?
+  code      String
+  type      String   @default("percent") // percent | fixed
+  value     Float
+  active    Boolean  @default(true)
   createdAt DateTime @default(now())
 
   storeId   String
   store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
+  @@unique([storeId, code])
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  passwordHash String?  // set when the customer creates a storefront account
+  createdAt    DateTime @default(now())
+
+  storeId   String
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
   orders    Order[]
+
+  @@unique([storeId, email])
 }
 
 model Order {

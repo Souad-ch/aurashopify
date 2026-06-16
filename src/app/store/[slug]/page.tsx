@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/format";
 import { StoreShell } from "@/components/store/StoreShell";
 import { AddToCartButton } from "@/components/store/AddToCart";
 import { StoreHero } from "@/components/store/StoreHero";
+import { StoreFilters } from "@/components/store/StoreFilters";
 import { getTemplate } from "@/lib/templates";
 
 export const dynamic = "force-dynamic";
@@ -23,8 +24,10 @@ const CARD: Record<string, string> = {
 
 export default async function StorePage({
   params,
+  searchParams,
 }: {
   params: { slug: string };
+  searchParams: { q?: string; category?: string };
 }) {
   const store = await prisma.store.findUnique({
     where: { slug: params.slug },
@@ -38,6 +41,18 @@ export default async function StorePage({
   const template = getTemplate(store.template);
   const heroImage = store.products[0]?.imageUrl || null;
   const fontClass = template.font === "serif" ? "font-serif" : "";
+
+  // categories + search/filter
+  const categories = Array.from(
+    new Set(store.products.map((p) => p.category).filter(Boolean) as string[])
+  );
+  const q = (searchParams.q || "").trim();
+  const activeCat = searchParams.category || "";
+  const products = store.products.filter(
+    (p) =>
+      (!activeCat || p.category === activeCat) &&
+      (!q || p.title.includes(q) || (p.description || "").includes(q))
+  );
 
   return (
     <StoreShell
@@ -63,15 +78,20 @@ export default async function StorePage({
               template.uppercaseTitles ? "uppercase tracking-wide" : ""
             }`}
           >
-            منتجاتنا
+            {activeCat || "منتجاتنا"}
           </h2>
-          {store.products.length === 0 ? (
+
+          <StoreFilters categories={categories} color={color} />
+
+          {products.length === 0 ? (
             <p className="py-16 text-center text-ink-soft">
-              لا توجد منتجات متاحة حالياً.
+              {q || activeCat
+                ? "لا توجد منتجات مطابقة لبحثك."
+                : "لا توجد منتجات متاحة حالياً."}
             </p>
           ) : (
             <div className={`grid gap-5 ${COLS[template.productColumns]}`}>
-              {store.products.map((p) => (
+              {products.map((p) => (
                 <div
                   key={p.id}
                   className={`group ${template.rounded} ${CARD[template.cardStyle]} transition`}
