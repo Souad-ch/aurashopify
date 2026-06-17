@@ -63,6 +63,13 @@ export async function getAdminSession(): Promise<SessionPayload | null> {
   return session;
 }
 
+/** Returns the session only if the user is a theme designer, else null. */
+export async function getDesignerSession(): Promise<SessionPayload | null> {
+  const session = await getSession();
+  if (!session || session.role !== "designer") return null;
+  return session;
+}
+
 /** Full current user with store, or null. */
 export async function getCurrentUser() {
   const session = await getSession();

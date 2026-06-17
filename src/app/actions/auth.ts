@@ -117,7 +117,13 @@ export async function loginAction(
     role: user.role,
   });
 
-  redirect(user.role === "admin" ? "/admin" : "/dashboard");
+  const dest =
+    user.role === "admin"
+      ? "/admin"
+      : user.role === "designer"
+        ? "/designer"
+        : "/dashboard";
+  redirect(dest);
 }
 
 export async function logoutAction() {

@@ -106,6 +106,39 @@ async function main() {
     },
   });
 
+  // Demo theme designer + published themes
+  const designerHash = await bcrypt.hash("designer123", 10);
+  const designer = await prisma.user.create({
+    data: {
+      email: "designer@aura.com",
+      name: "مصمّم القوالب",
+      passwordHash: designerHash,
+      role: "designer",
+    },
+  });
+  await prisma.theme.createMany({
+    data: [
+      {
+        name: "Sapphire", slug: "sapphire", description: "قالب أزرق عصري بهيدر متدرّج وبطاقات بظلال ناعمة.",
+        hero: "gradient", font: "sans", productColumns: 4, cardStyle: "shadow",
+        rounded: "rounded-2xl", uppercaseTitles: false, accentColor: "#2563eb",
+        price: 0, status: "published", sales: 12, designerId: designer.id,
+      },
+      {
+        name: "Noir", slug: "noir", description: "قالب جريء بخلفية داكنة وهيدر بصورة، للعلامات الفاخرة.",
+        hero: "image", font: "sans", productColumns: 3, cardStyle: "border",
+        rounded: "rounded-3xl", uppercaseTitles: true, accentColor: "#0ea5e9",
+        price: 29, status: "published", sales: 5, designerId: designer.id,
+      },
+      {
+        name: "Royal", slug: "royal", description: "قالب أنيق بخط Serif وهيدر مقسوم، مثالي للأزياء.",
+        hero: "split", font: "serif", productColumns: 3, cardStyle: "flat",
+        rounded: "rounded-none", uppercaseTitles: true, accentColor: "#1e40af",
+        price: 19, status: "published", sales: 8, designerId: designer.id,
+      },
+    ],
+  });
+
   // Demo merchant user
   const passwordHash = await bcrypt.hash("password123", 10);
   const user = await prisma.user.create({
@@ -235,6 +268,7 @@ async function main() {
   console.log("✅ Seed complete!");
   console.log("   Merchant: demo@aura.com / password123");
   console.log("   Admin:    admin@aura.com / admin123");
+  console.log("   Designer: designer@aura.com / designer123");
 }
 
 main()

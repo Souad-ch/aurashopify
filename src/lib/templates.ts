@@ -72,3 +72,30 @@ export const TEMPLATES: Template[] = [
 export function getTemplate(id: string | null | undefined): Template {
   return TEMPLATES.find((t) => t.id === id) || TEMPLATES[0];
 }
+
+/** Build a Template object from a designer-created Theme row. */
+export function themeToTemplate(theme: {
+  id: string;
+  name: string;
+  description: string;
+  hero: string;
+  font: string;
+  productColumns: number;
+  cardStyle: string;
+  rounded: string;
+  uppercaseTitles: boolean;
+  accentColor: string;
+}): Template {
+  return {
+    id: theme.id as TemplateId,
+    name: theme.name,
+    description: theme.description,
+    preview: { bg: "#f8fafc", accent: theme.accentColor, text: "#1a1a1a" },
+    hero: theme.hero as Template["hero"],
+    font: theme.font as Template["font"],
+    productColumns: (theme.productColumns === 3 ? 3 : 4) as 3 | 4,
+    cardStyle: theme.cardStyle as Template["cardStyle"],
+    rounded: theme.rounded as Template["rounded"],
+    uppercaseTitles: theme.uppercaseTitles,
+  };
+}

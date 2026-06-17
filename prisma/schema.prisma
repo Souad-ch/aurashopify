@@ -12,12 +12,50 @@ model User {
   email         String         @unique
   name          String
   passwordHash  String
-  role          String         @default("merchant") // merchant | admin
+  role          String         @default("merchant") // merchant | admin | designer
   createdAt     DateTime       @default(now())
 
   store         Store?
   subscription  Subscription?
   orders        Order[]
+  themes        Theme[]
+}
+
+model Theme {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String
+  // style tokens (mirror the built-in Template type)
+  hero            String   @default("gradient") // gradient | image | split | centered
+  font            String   @default("sans")     // sans | serif
+  productColumns  Int      @default(4)
+  cardStyle       String   @default("shadow")   // shadow | border | flat
+  rounded         String   @default("rounded-2xl")
+  uppercaseTitles Boolean  @default(false)
+  accentColor     String   @default("#2563eb")
+  price           Float    @default(0)          // 0 = free
+  status          String   @default("draft")    // draft | published
+  sales           Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  designerId      String
+  designer        User     @relation(fields: [designerId], references: [id], onDelete: Cascade)
+
+  purchases       ThemePurchase[]
+}
+
+model ThemePurchase {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  price     Float    @default(0)
+
+  themeId   String
+  theme     Theme    @relation(fields: [themeId], references: [id], onDelete: Cascade)
+
+  storeId   String
+
+  @@unique([themeId, storeId])
 }
 
 model Store {

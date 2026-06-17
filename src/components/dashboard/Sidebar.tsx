@@ -10,6 +10,7 @@ const NAV = [
   { href: "/dashboard/orders", label: "الطلبات", icon: "🧾" },
   { href: "/dashboard/customers", label: "العملاء", icon: "👥" },
   { href: "/dashboard/discounts", label: "الخصومات والعروض", icon: "🏷️" },
+  { href: "/dashboard/themes", label: "سوق القوالب", icon: "🛍️" },
   { href: "/dashboard/analytics", label: "التحليلات", icon: "📊" },
   { href: "/dashboard/billing", label: "الفوترة والاشتراك", icon: "💳" },
   { href: "/dashboard/settings", label: "الإعدادات", icon: "⚙️" },

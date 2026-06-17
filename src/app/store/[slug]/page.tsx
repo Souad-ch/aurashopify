@@ -7,7 +7,7 @@ import { StoreShell } from "@/components/store/StoreShell";
 import { AddToCartButton } from "@/components/store/AddToCart";
 import { StoreHero } from "@/components/store/StoreHero";
 import { StoreFilters } from "@/components/store/StoreFilters";
-import { getTemplate } from "@/lib/templates";
+import { resolveTemplate } from "@/lib/storeTheme";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +38,7 @@ export default async function StorePage({
 
   if (!store) notFound();
   const color = store.themeColor;
-  const template = getTemplate(store.template);
+  const template = await resolveTemplate(store.template);
   const heroImage = store.products[0]?.imageUrl || null;
   const fontClass = template.font === "serif" ? "font-serif" : "";
 

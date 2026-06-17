@@ -12,8 +12,8 @@ export default async function DashboardLayout({
 }) {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  // Platform admins don't own a store — send them to the admin panel.
-  if (!user.store) redirect("/admin");
+  // Users without a store are routed to their own area.
+  if (!user.store) redirect(user.role === "designer" ? "/designer" : "/admin");
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
