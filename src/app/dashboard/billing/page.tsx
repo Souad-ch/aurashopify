@@ -3,19 +3,28 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate, statusBadge } from "@/lib/format";
-import { cancelSubscription } from "@/app/actions/subscription";
+import {
+  cancelSubscription,
+  finalizeStripeSubscription,
+} from "@/app/actions/subscription";
 
 export const dynamic = "force-dynamic";
 
 export default async function BillingPage({
   searchParams,
 }: {
-  searchParams: { subscribed?: string };
+  searchParams: { subscribed?: string; session_id?: string };
 }) {
-  const user = await getCurrentUser();
+  let user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const sub = user.subscription;
+  // Returning from Stripe Checkout: confirm payment and activate the plan.
+  if (searchParams.session_id) {
+    await finalizeStripeSubscription(searchParams.session_id);
+    user = await getCurrentUser();
+  }
+
+  const sub = user!.subscription;
   const plans = await prisma.plan.findMany({ orderBy: { order: "asc" } });
 
   return (
@@ -25,7 +34,7 @@ export default async function BillingPage({
         <p className="text-sm text-ink-soft">أدر خطتك ومدفوعاتك</p>
       </div>
 
-      {searchParams.subscribed && (
+      {(searchParams.subscribed || searchParams.session_id) && (
         <div className="rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm text-brand-800">
           🎉 تم تفعيل اشتراكك بنجاح!
         </div>
