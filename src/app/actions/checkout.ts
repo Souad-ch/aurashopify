@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { getShipping } from "@/lib/shipping";
 
 const checkoutSchema = z.object({
   name: z.string().min(1),
@@ -10,6 +11,9 @@ const checkoutSchema = z.object({
   slug: z.string().min(1),
   items: z.string().min(1),
   discountCode: z.string().optional(),
+  shippingMethod: z.string().optional(),
+  address: z.string().optional(),
+  cardNumber: z.string().optional(),
 });
 
 const itemSchema = z.array(
@@ -49,21 +53,32 @@ export async function checkoutAction(formData: FormData) {
 
   const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
 
-  // Apply discount code if provided and valid
-  let total = subtotal;
+  // Discount
+  let discountAmount = 0;
+  let discountCode: string | null = null;
   const codeInput = (parsed.data.discountCode || "").trim().toUpperCase();
   if (codeInput) {
     const discount = await prisma.discount.findFirst({
       where: { storeId: store.id, code: codeInput, active: true },
     });
     if (discount) {
-      const amount =
+      discountAmount =
         discount.type === "percent"
           ? (subtotal * discount.value) / 100
           : Math.min(discount.value, subtotal);
-      total = Math.max(0, subtotal - amount);
+      discountCode = discount.code;
     }
   }
+
+  // Shipping
+  const shippingOpt = getShipping(parsed.data.shippingMethod);
+  const shipping = shippingOpt.cost;
+
+  const total = Math.max(0, Math.round((subtotal - discountAmount + shipping) * 100) / 100);
+
+  // Simulated payment: capture last 4 digits of the card (no real charge).
+  const digits = (parsed.data.cardNumber || "").replace(/\D/g, "");
+  const last4 = digits.length >= 4 ? digits.slice(-4) : null;
 
   const last = await prisma.order.findFirst({
     where: { storeId: store.id },
@@ -75,8 +90,15 @@ export async function checkoutAction(formData: FormData) {
   const order = await prisma.order.create({
     data: {
       number: nextNumber,
-      total: Math.round(total * 100) / 100,
+      subtotal: Math.round(subtotal * 100) / 100,
+      shipping,
+      discountCode,
+      discountAmount: Math.round(discountAmount * 100) / 100,
+      total,
       status: "paid",
+      shippingMethod: shippingOpt.id,
+      paymentLast4: last4,
+      address: parsed.data.address || null,
       storeId: store.id,
       customerId: customer.id,
       items: {

@@ -144,11 +144,18 @@ model Customer {
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  number      Int         @default(1000)
-  total       Float
-  status      String      @default("pending") // pending | paid | fulfilled | cancelled | refunded
-  createdAt   DateTime    @default(now())
+  id            String      @id @default(cuid())
+  number        Int         @default(1000)
+  subtotal      Float       @default(0)
+  shipping      Float       @default(0)
+  discountCode  String?
+  discountAmount Float      @default(0)
+  total         Float
+  status        String      @default("pending") // pending | paid | fulfilled | cancelled | refunded
+  shippingMethod String?    // standard | express | pickup
+  paymentLast4  String?
+  address       String?
+  createdAt     DateTime    @default(now())
 
   storeId     String
   store       Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
