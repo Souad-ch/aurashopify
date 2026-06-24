@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { MarketingNav } from "@/components/MarketingNav";
 import { Footer } from "@/components/Footer";
+import { AmbientCanvas } from "@/components/fx/AmbientCanvas";
+import { Reveal } from "@/components/fx/Reveal";
 
 const FEATURES = [
   {
@@ -45,19 +47,23 @@ const STATS = [
 export default function HomePage() {
   return (
     <>
+      <Reveal />
       <MarketingNav />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 to-white">
-        <div className="mx-auto max-w-7xl px-4 py-20 text-center sm:px-6 lg:px-8 lg:py-28">
-          <span className="badge bg-brand-100 text-brand-700">
+        <AmbientCanvas />
+        <div className="orb orb-2 -left-20 -top-10 h-72 w-72 bg-brand-300" />
+        <div className="orb orb-3 right-0 top-24 h-80 w-80 bg-brand-400" />
+        <div className="relative mx-auto max-w-7xl px-4 py-20 text-center sm:px-6 lg:px-8 lg:py-28">
+          <span className="reveal badge bg-brand-100 text-brand-700">
             🚀 منصة التجارة الإلكترونية رقم 1
           </span>
-          <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight text-ink sm:text-5xl lg:text-6xl">
+          <h1 className="reveal reveal-d1 mx-auto mt-6 max-w-3xl text-4xl font-extrabold leading-tight text-ink sm:text-5xl lg:text-6xl">
             ابنِ متجرك الإلكتروني وابدأ البيع{" "}
-            <span className="text-brand-600">خلال دقائق</span>
+            <span className="shimmer-text">خلال دقائق</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-soft">
+          <p className="reveal reveal-d2 mx-auto mt-6 max-w-2xl text-lg text-ink-soft">
             Aura تمنحك كل ما تحتاجه لإنشاء متجر احترافي وإدارة المنتجات والطلبات
             والعملاء، وتنمية أعمالك — كل ذلك من مكان واحد.
           </p>
@@ -119,9 +125,9 @@ export default function HomePage() {
       {/* Stats */}
       <section className="border-y border-gray-100 bg-white">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
-          {STATS.map(([v, l]) => (
-            <div key={l} className="text-center">
-              <p className="text-3xl font-extrabold text-ink">{v}</p>
+          {STATS.map(([v, l], i) => (
+            <div key={l} className={`reveal reveal-d${(i % 3) + 1} text-center`}>
+              <p className="text-3xl font-extrabold text-brand-600">{v}</p>
               <p className="mt-1 text-sm text-ink-soft">{l}</p>
             </div>
           ))}
@@ -132,18 +138,18 @@ export default function HomePage() {
       <section id="features" className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-extrabold text-ink sm:text-4xl">
+            <h2 className="reveal text-3xl font-extrabold text-ink sm:text-4xl">
               كل ما تحتاجه لتنجح
             </h2>
-            <p className="mt-4 text-lg text-ink-soft">
+            <p className="reveal reveal-d1 mt-4 text-lg text-ink-soft">
               أدوات قوية مصممة لتساعدك على البيع أكثر وإدارة أقل.
             </p>
           </div>
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f) => (
+            {FEATURES.map((f, i) => (
               <div
                 key={f.title}
-                className="card p-6 transition hover:shadow-pop"
+                className={`reveal reveal-d${(i % 3) + 1} card p-6 transition hover:-translate-y-1 hover:shadow-pop`}
               >
                 <div className="grid h-12 w-12 place-items-center rounded-xl bg-brand-50 text-2xl">
                   {f.icon}
